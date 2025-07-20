@@ -1,0 +1,385 @@
+/* 全局样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #e0e0e0;
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+.container {
+    min-width: 600px;
+    max-width: 90vw;
+    width: fit-content;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* 头部样式 */
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px 0;
+}
+
+header h1 {
+    color: #64ffda;
+    margin-bottom: 10px;
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+header p {
+    color: #b0b0b0;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+}
+
+.nav-links {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.nav-link {
+    color: #64ffda;
+    text-decoration: none;
+    padding: 8px 16px;
+    border: 1px solid rgba(100, 255, 218, 0.3);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    background: rgba(100, 255, 218, 0.1);
+}
+
+.nav-link:hover {
+    background: rgba(100, 255, 218, 0.2);
+    border-color: #64ffda;
+    transform: translateY(-1px);
+}
+
+/* 主要内容区域 */
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+/* 节标题 */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.section-header h2 {
+    color: #64ffda;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.input-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.hint {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+/* 输入区域 */
+.input-section {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    width: fit-content;
+    min-width: 500px;
+}
+
+#codeInput {
+    width: 100%;
+    min-width: 460px;
+    background: #1e1e2f;
+    border: 2px solid #333;
+    border-radius: 8px;
+    padding: 15px;
+    color: #e0e0e0;
+    font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    resize: both;
+    min-height: 60px;
+    height: auto;
+    transition: all 0.3s ease;
+    overflow-y: hidden;
+}
+
+#codeInput:focus {
+    outline: none;
+    border-color: #64ffda;
+    box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.1);
+}
+
+#codeInput::placeholder {
+    color: #666;
+}
+
+/* 预览区域 */
+.preview-section {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    width: fit-content;
+    min-width: 500px;
+}
+
+.code-preview {
+    background: #1e1e2f;
+    border-radius: 8px;
+    border: 2px solid #333;
+    min-height: 60px;
+    min-width: 460px;
+    width: fit-content;
+    position: relative;
+    overflow: auto;
+}
+
+.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60px;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+    font-size: 1.1rem;
+}
+
+/* 代码行样式 */
+.code-line {
+    display: flex;
+    position: relative;
+    min-height: 24px;
+    line-height: 24px;
+}
+
+.line-number {
+    background: #2a2a3a;
+    color: #666;
+    padding: 0 12px;
+    border-right: 1px solid #444;
+    text-align: right;
+    min-width: 50px;
+    cursor: pointer;
+    user-select: none;
+    font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.line-number:hover {
+    background: #3a3a4a;
+    color: #64ffda;
+}
+
+.line-content {
+    flex: 1;
+    padding: 0 15px;
+    font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+    font-size: 14px;
+    white-space: pre;
+    background: #1e1e2f;
+    transition: background-color 0.2s ease;
+    min-width: fit-content;
+}
+
+/* 选中行高亮 */
+.code-line.selected .line-number {
+    background: #ff6b6b;
+    color: white;
+    font-weight: bold;
+}
+
+.code-line.selected .line-content {
+    background: rgba(255, 107, 107, 0.15);
+    border-left: 3px solid #ff6b6b;
+}
+
+/* 按钮样式 */
+.btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #64ffda 0%, #18ffff 100%);
+    color: #1a1a2e;
+}
+
+.btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(100, 255, 218, 0.3);
+}
+
+.btn-primary:disabled {
+    background: #444;
+    color: #666;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-secondary {
+    background: #444;
+    color: #e0e0e0;
+    border: 1px solid #666;
+}
+
+.btn-secondary:hover {
+    background: #555;
+    border-color: #64ffda;
+}
+
+/* 操作区域 */
+.actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(100, 255, 218, 0.2);
+}
+
+.status {
+    color: #64ffda;
+    font-weight: 500;
+    min-height: 20px;
+}
+
+/* Prism.js 样式覆盖 */
+.token.comment {
+    color: #7c7c7c !important;
+}
+
+.token.string {
+    color: #a8e6cf !important;
+}
+
+.token.keyword {
+    color: #ff8a65 !important;
+}
+
+.token.function {
+    color: #64ffda !important;
+}
+
+.token.number {
+    color: #ffb74d !important;
+}
+
+.token.operator {
+    color: #e0e0e0 !important;
+}
+
+.token.punctuation {
+    color: #e0e0e0 !important;
+}
+
+.token.builtin {
+    color: #ba68c8 !important;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .controls {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .hint {
+        font-size: 0.8rem;
+    }
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #2a2a3a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #64ffda;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #18ffff;
+}
+
+/* 加载动画 */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(100, 255, 218, 0.3);
+    border-radius: 50%;
+    border-top-color: #64ffda;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+} 

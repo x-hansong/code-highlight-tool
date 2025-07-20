@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>代码片段高亮截图工具</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Prism.js CSS for Python syntax highlighting -->
+    <link href="https://unpkg.com/prismjs@1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <!-- Prism.js plugins -->
+    <link href="https://unpkg.com/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🐍 Python 代码片段高亮截图工具</h1>
+            <p>输入代码，选择行高亮，一键生成截图</p>
+            <div class="nav-links">
+                <a href="README.md" class="nav-link">📖 使用说明</a>
+            </div>
+        </header>
+
+        <main>
+            <!-- 代码输入区域 -->
+            <section class="input-section">
+                <div class="section-header">
+                    <h2>代码输入</h2>
+                    <div class="input-controls">
+                        <button id="formatBtn" class="btn btn-secondary">🔧 格式化代码</button>
+                        <button id="clearBtn" class="btn btn-secondary">清空</button>
+                    </div>
+                </div>
+                <textarea 
+                    id="codeInput" 
+                    placeholder="请输入 Python 代码...&#10;&#10;示例：&#10;def hello_world():&#10;    print('Hello, World!')&#10;    return True"
+                    rows="10"
+                ></textarea>
+            </section>
+
+            <!-- 代码预览区域 -->
+            <section class="preview-section">
+                <div class="section-header">
+                    <h2>代码预览</h2>
+                    <div class="controls">
+                        <span class="hint">💡 点击行号选择行，按住 Ctrl/Cmd 多选</span>
+                        <button id="clearSelection" class="btn btn-secondary">清除选择</button>
+                    </div>
+                </div>
+                <div id="codePreview" class="code-preview">
+                    <div class="placeholder">
+                        在上方输入代码以开始预览...
+                    </div>
+                </div>
+            </section>
+
+            <!-- 操作按钮 -->
+            <section class="actions">
+                <button id="copyToClipboard" class="btn btn-primary" disabled>
+                    📋 复制到剪贴板
+                </button>
+                <button id="downloadPng" class="btn btn-primary" disabled>
+                    💾 下载 PNG 图片
+                </button>
+                <div class="status" id="status"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/prismjs@1.29.0/components/prism-core.min.js"></script>
+    <script src="https://unpkg.com/prismjs@1.29.0/components/prism-python.min.js"></script>
+    <script src="https://unpkg.com/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+    <script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
