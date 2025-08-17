@@ -1,6 +1,8 @@
 // 全局变量
 let selectedLines = new Set();
 let codeLines = [];
+let pyodide = null;
+let pyodideReady = false;
 
 // DOM 元素
 const codeInput = document.getElementById('codeInput');
@@ -34,32 +36,91 @@ document.addEventListener('DOMContentLoaded', function() {
 // 等待库加载完成
 function waitForLibraries() {
     const checkInterval = setInterval(() => {
-        if (typeof Prism !== 'undefined' && typeof html2canvas !== 'undefined') {
+        if (typeof Prism !== 'undefined' && typeof html2canvas !== 'undefined' && typeof loadPyodide !== 'undefined') {
             clearInterval(checkInterval);
-            console.log('所有库加载完成');
+            console.log('基础库加载完成，开始初始化 Pyodide...');
             
             // 初始预览
             autoResizeTextarea();
             updatePreview();
             
-            // 显示初始状态
-            showStatus('准备就绪 ✨', 'success');
+            // 更新初始按钮状态
+            updateFormatButtonState();
+            
+            // 初始化 Pyodide
+            initializePyodide();
         } else {
             console.log('等待库加载...', {
                 Prism: typeof Prism !== 'undefined',
-                html2canvas: typeof html2canvas !== 'undefined'
+                html2canvas: typeof html2canvas !== 'undefined',
+                Pyodide: typeof loadPyodide !== 'undefined'
             });
         }
     }, 100);
     
-    // 10秒后超时
+    // 30秒后超时（Pyodide 需要更多时间）
     setTimeout(() => {
         clearInterval(checkInterval);
-        if (typeof Prism === 'undefined' || typeof html2canvas === 'undefined') {
+        if (typeof Prism === 'undefined' || typeof html2canvas === 'undefined' || typeof loadPyodide === 'undefined') {
             console.error('库加载超时');
             showStatus('库加载失败，请刷新页面重试', 'error');
         }
-    }, 10000);
+    }, 30000);
+}
+
+// 初始化 Pyodide
+async function initializePyodide() {
+    try {
+        showStatus('正在初始化 Python 环境...', 'loading');
+        console.log('开始加载 Pyodide...');
+        
+        // 加载 Pyodide
+        pyodide = await loadPyodide({
+            indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/"
+        });
+        
+        console.log('Pyodide 加载完成，安装 Black...');
+        showStatus('正在安装 Python 格式化工具...', 'loading');
+        
+        // 安装 micropip 和 black
+        await pyodide.loadPackage(['micropip']);
+        
+        // 使用 pyodide.runPythonAsync 来处理异步操作
+        await pyodide.runPythonAsync(`
+            import micropip
+            await micropip.install('black')
+        `);
+        
+        console.log('Black 安装完成');
+        pyodideReady = true;
+        
+        showStatus('Python 环境就绪 ✨ 现在可以使用专业的代码格式化！', 'success');
+        
+        // 更新格式化按钮状态
+        updateFormatButtonState();
+        
+    } catch (error) {
+        console.error('Pyodide 初始化失败:', error);
+        pyodideReady = false;
+        showStatus('Python 环境初始化失败，将使用基础格式化功能', 'error');
+        
+        // 即使 Pyodide 失败，也显示基本就绪状态
+        setTimeout(() => {
+            showStatus('基础功能就绪 ✨', 'success');
+        }, 3000);
+    }
+}
+
+// 更新格式化按钮状态
+function updateFormatButtonState() {
+    const formatBtn = document.getElementById('formatBtn');
+    if (pyodideReady) {
+        formatBtn.innerHTML = '🐍 专业格式化 (Black)';
+        formatBtn.title = '使用 Python Black 工具进行专业代码格式化';
+    } else {
+        formatBtn.innerHTML = '🔧 基础格式化';
+        formatBtn.title = '使用基础格式化功能';
+    }
 }
 
 // 自动调整输入框尺寸
@@ -215,7 +276,7 @@ function clearCode() {
 }
 
 // 格式化代码
-function formatCode() {
+async function formatCode() {
     const code = codeInput.value.trim();
     
     if (!code) {
@@ -226,20 +287,77 @@ function formatCode() {
     try {
         showStatus('正在格式化代码...', 'loading');
         
-        const formattedCode = formatPythonCode(code);
+        let formattedCode;
+        
+        if (pyodideReady && pyodide) {
+            // 使用 Pyodide + Black 进行专业格式化
+            formattedCode = await formatPythonCodeWithPyodide(code);
+        } else {
+            // 使用基础格式化
+            formattedCode = formatPythonCodeBasic(code);
+        }
+        
         codeInput.value = formattedCode;
         autoResizeTextarea();
         updatePreview();
         
-        showStatus('代码格式化完成 ✨', 'success');
+        if (pyodideReady) {
+            showStatus('代码格式化完成 ✨ (使用 Python Black)', 'success');
+        } else {
+            showStatus('代码格式化完成 ✨ (基础格式化)', 'success');
+        }
     } catch (error) {
         console.error('格式化失败:', error);
         showStatus('格式化失败: ' + error.message, 'error');
     }
 }
 
-// Python 代码格式化函数
-function formatPythonCode(code) {
+// 使用 Pyodide + Black 进行专业格式化
+async function formatPythonCodeWithPyodide(code) {
+    try {
+        // 设置 Python 变量
+        pyodide.globals.set("python_code", code);
+        
+        // 运行 Black 格式化
+        pyodide.runPython(`
+import black
+import sys
+
+try:
+    # 配置 Black 的模式
+    mode = black.FileMode(
+        target_versions={black.TargetVersion.PY38},
+        line_length=88,
+        string_normalization=True,
+        is_pyi=False,
+    )
+    
+    # 格式化代码
+    formatted_code = black.format_str(python_code, mode=mode)
+    result = formatted_code
+except black.InvalidInput as e:
+    # 如果代码有语法错误，返回原代码
+    print(f"语法错误: {e}", file=sys.stderr)
+    result = python_code
+except Exception as e:
+    # 其他错误也返回原代码
+    print(f"格式化错误: {e}", file=sys.stderr)
+    result = python_code
+        `);
+        
+        // 获取结果
+        const result = pyodide.globals.get('result');
+        
+        return result;
+    } catch (error) {
+        console.error('Pyodide 格式化失败:', error);
+        // 如果 Pyodide 格式化失败，回退到基础格式化
+        return formatPythonCodeBasic(code);
+    }
+}
+
+// 基础 Python 代码格式化函数
+function formatPythonCodeBasic(code) {
     if (!code) return '';
     
     // 分割代码行
@@ -554,6 +672,12 @@ function checkBrowserSupport() {
     if (!window.Prism) {
         console.error('Prism.js 库未加载');
         showStatus('语法高亮库加载失败', 'error');
+    }
+    
+    if (!window.loadPyodide) {
+        console.error('Pyodide 库未加载');
+    } else {
+        console.log('Pyodide 库已加载');
     }
     
     // 测试基本功能
